@@ -1,0 +1,92 @@
+{
+  "ours-tok32k": {
+    "tamil": {
+      "tokens_per_word": 2.2589065245350652,
+      "bytes_per_token": 10.731448583701724,
+      "chars_per_token": 4.063023025840066,
+      "cut_letter_rate": 6.905276543296735e-05,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 2.4795411134884735,
+      "bytes_per_token": 4.050768193558189,
+      "chars_per_token": 4.044261337739289,
+      "cut_letter_rate": 5.697356426618049e-05,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_real": {
+      "tokens_per_word": 2.8611197350719237,
+      "bytes_per_token": 3.521720258979274,
+      "chars_per_token": 3.5208702571707597,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.7326038585976493,
+      "bytes_per_token": 3.6247944162364703,
+      "chars_per_token": 3.6139139279874164,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.9995
+    }
+  },
+  "ours-tok48k": {
+    "tamil": {
+      "tokens_per_word": 2.130090441139682,
+      "bytes_per_token": 11.38042721344092,
+      "chars_per_token": 4.308732176412071,
+      "cut_letter_rate": 6.90836741461258e-05,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 2.3216679076693967,
+      "bytes_per_token": 4.326220060999881,
+      "chars_per_token": 4.319270739579187,
+      "cut_letter_rate": 5.5777114649859164e-05,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_real": {
+      "tokens_per_word": 2.701231501604057,
+      "bytes_per_token": 3.7301739330319514,
+      "chars_per_token": 3.7292736188797795,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.6443295682497021,
+      "bytes_per_token": 3.819388104101047,
+      "chars_per_token": 3.8079235070471826,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.9995
+    }
+  },
+  "agaram-2.5b": {
+    "tamil": {
+      "tokens_per_word": 1.9133171855823932,
+      "bytes_per_token": 12.669796417501788,
+      "chars_per_token": 4.796898962475292,
+      "cut_letter_rate": 0.15881280716192,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.2999920536584075,
+      "bytes_per_token": 3.0436577160857174,
+      "chars_per_token": 3.038768608396922,
+      "cut_letter_rate": 5.351084664861568e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.04387871261513,
+      "bytes_per_token": 3.310270968619318,
+      "chars_per_token": 3.3094720021759088,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.5494635205412042,
+      "bytes_per_token": 4.053230494901162,
+      "chars_per_token": 4.041063976829699,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  }
+}

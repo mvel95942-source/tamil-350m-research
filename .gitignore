@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local secrets
+.kaggle/
+credentials.json
+.env
+
+# Large model/data artifacts (kept on Kaggle, not redistributed)
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.npy
+*.npz
+*.zip
+*.tar
+*.tar.gz
+.cache/
+runs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

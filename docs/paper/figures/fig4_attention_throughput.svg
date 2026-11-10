@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 240" font-family="Arial, sans-serif" font-size="13">
+<text x="10" y="22" font-weight="bold">Training throughput, 350M, ctx 1,024, 2xT4, random tokens</text>
+<g stroke="#333" stroke-width="1.2">
+<rect x="230" y="45" width="180" height="40" fill="#f4b6b6"/>
+<rect x="230" y="105" width="423" height="40" fill="#b6e3b6"/>
+<rect x="230" y="165" width="343" height="40" fill="#b6c9ee"/>
+</g>
+<g fill="#111">
+<text x="222" y="70" text-anchor="end">HF sdpa + enable_gqa</text><text x="222" y="85" text-anchor="end" font-size="11">(math kernel, mbs 4, OOM w/o ckpt)</text>
+<text x="222" y="130" text-anchor="end">K/V expanded, mbs 4</text>
+<text x="222" y="190" text-anchor="end">expanded + ckpt, mbs 8</text>
+<text x="418" y="70">3,120</text><text x="418" y="130" fill="#111">7,336 (2.35x)</text><text x="581" y="190">5,947</text>
+<text x="230" y="230" font-size="11" fill="#555">Bar length proportional to tokens/s (scale: 180 px = 3,120).</text>
+</g></svg>

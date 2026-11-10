@@ -1,0 +1,11 @@
+{
+  "title": "tamil-sft-reliability",
+  "id": "velmurugan04/tamil-sft-reliability",
+  "licenses": [
+    {
+      "name": "CC0-1.0"
+    }
+  ],
+  "isPrivate": true,
+  "description": "Mechanically generated Tamil SFT conversations for arithmetic, correction, instruction following, and calibrated uncertainty. Contains no reliability-holdout prompts."
+}

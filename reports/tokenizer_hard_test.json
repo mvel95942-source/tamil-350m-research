@@ -1,0 +1,378 @@
+{
+  "artifact": "artifacts\\tok64k",
+  "vocab_size": 63995,
+  "sha256": "861ebf3409db01b3964686bbbf3a71f0b721cd88b571bcbdb3d67196397a25d8",
+  "elapsed_s": 48.8,
+  "verdict": "PASS (with warnings)",
+  "checks": 12156,
+  "errors": 0,
+  "warnings": 5,
+  "suites": [
+    {
+      "name": "structure",
+      "description": "vocab, id map, decoder/normalizer wiring",
+      "checks": 15,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "vocab_size": 63995,
+        "tokenizer_json_sha256": "861ebf3409db01b3964686bbbf3a71f0b721cd88b571bcbdb3d67196397a25d8",
+        "vocab_composition": {
+          "latin": 30173,
+          "tamil": 27905,
+          "other": 5521,
+          "byte": 256,
+          "special/tool/reserved": 32,
+          "space-only": 44,
+          "mixed_script": 54,
+          "whitespace": 10
+        }
+      }
+    },
+    {
+      "name": "vocab_hygiene",
+      "description": "orphan-sign and mixed-script pieces",
+      "checks": 0,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [
+        {
+          "kind": "orphan-sign pieces: can only match malformed text (wasted vocab slots)",
+          "input": "18",
+          "examples": [
+            "\\u0bc2",
+            "\\u0bcb",
+            "\\u0bbe\\u0bcd",
+            "\\u0bc7",
+            "\\u0bc0",
+            "\\u0bbf"
+          ]
+        },
+        {
+          "kind": "mixed Tamil+Latin pieces (usually date/suffix artefacts)",
+          "input": "54",
+          "examples": [
+            "vaa\\u0bcd",
+            "\\\\n\\ue001\\ue09b\\ue099\\ue06c",
+            "naa\\u0bcd.",
+            "\\u2581cho\\u0bcd",
+            "\\\\n\\ue003\\ue06c",
+            "a\\u0bcd"
+          ]
+        }
+      ],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "orphan_dependent_pieces": 18,
+        "mixed_script_pieces": 54,
+        "orphan_examples": [
+          "\\u0bc2",
+          "\\u0bcb",
+          "\\u0bbe\\u0bcd",
+          "\\u0bc7",
+          "\\u0bc0",
+          "\\u0bbf",
+          "\\u0bbe",
+          "\\u2581\\u0bc6",
+          "\\u0bc8",
+          "\\u0bd7"
+        ]
+      }
+    },
+    {
+      "name": "akshara",
+      "description": "every table unit must be exactly one token and round-trip",
+      "checks": 1292,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "akshara_units": 312,
+        "atomic_failures": 0
+      }
+    },
+    {
+      "name": "tamil_block",
+      "description": "U+0B80-U+0BFF standalone, after a consonant, after a space",
+      "checks": 768,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "roundtrip_failures": 0
+      }
+    },
+    {
+      "name": "malformed_tamil",
+      "description": "degenerate Tamil, numbers, punctuation, invisible chars",
+      "checks": 141,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {}
+    },
+    {
+      "name": "unicode",
+      "description": "other scripts, emoji ZWJ, combining marks, bidi, controls",
+      "checks": 326,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [
+        "lone surrogate raises TypeError (input must be sanitized upstream)"
+      ],
+      "metrics": {}
+    },
+    {
+      "name": "fuzz",
+      "description": "3000 seeded random mixed-script strings",
+      "checks": 9001,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "strings": 3000,
+        "tokens": 66765,
+        "chars": 65026,
+        "chars_per_token": 0.9739534187074066,
+        "non_idempotent": 0
+      }
+    },
+    {
+      "name": "whitespace_code",
+      "description": "indent runs, tabs, CRLF, code exactness",
+      "checks": 192,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {}
+    },
+    {
+      "name": "specials_injection",
+      "description": "can plain text reach special/tool/reserved ids?",
+      "checks": 3,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [
+        {
+          "kind": "special tokens are matched inside plain text (injectable; decode drops them)",
+          "input": "<pad>",
+          "count": 32,
+          "examples": [
+            "<pad>",
+            "<s>",
+            "</s>",
+            "<unk>",
+            "<|user|>",
+            "<|assistant|>"
+          ]
+        }
+      ],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "specials_reachable_from_text": 32,
+        "specials_of": 32,
+        "examples": [
+          "<pad>",
+          "<s>",
+          "</s>",
+          "<unk>",
+          "<|user|>",
+          "<|assistant|>",
+          "<|system|>",
+          "<tool_call>"
+        ]
+      }
+    },
+    {
+      "name": "known_collisions",
+      "description": "raw PUA and U+2581 collide with the akshara/space encoding",
+      "checks": 3,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [
+        {
+          "kind": "collision",
+          "input": "\\ue000",
+          "decoded": "\\u0b83",
+          "expected": "\\ue000"
+        },
+        {
+          "kind": "collision",
+          "input": "\\ue001",
+          "decoded": "\\u0b85",
+          "expected": "\\ue001"
+        },
+        {
+          "kind": "collision",
+          "input": "\\u2581",
+          "decoded": " ",
+          "expected": "\\u2581"
+        },
+        {
+          "kind": "collision",
+          "input": "a\\u2581b",
+          "decoded": "a b",
+          "expected": "a\\u2581b"
+        },
+        {
+          "kind": "collision",
+          "input": "\\u2581\\u2581",
+          "decoded": "  ",
+          "expected": "\\u2581\\u2581"
+        },
+        {
+          "kind": "collision",
+          "input": "\\ue000\\u0ba4\\u0bae\\u0bbf\\u0bb4\\u0bcd",
+          "decoded": "\\u0b83\\u0ba4\\u0bae\\u0bbf\\u0bb4\\u0bcd",
+          "expected": "\\ue000\\u0ba4\\u0bae\\u0bbf\\u0bb4\\u0bcd"
+        }
+      ],
+      "notes": [],
+      "metrics": {
+        "lossy_cases": 6,
+        "pua_alphabet_size": 312
+      }
+    },
+    {
+      "name": "integration",
+      "description": "transformers load, batch, save/reload, threads",
+      "checks": 7,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {}
+    },
+    {
+      "name": "perf",
+      "description": "encode/decode throughput and long-document latency",
+      "checks": 6,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "tamil": {
+          "input_mb": 1.0,
+          "tokens": 60001,
+          "encode_mb_s": 0.53,
+          "encode_tok_s": 31766.0,
+          "decode_mb_s": 1.74,
+          "tokens_per_char": 0.162
+        },
+        "tanglish": {
+          "input_mb": 1.0,
+          "tokens": 370361,
+          "encode_mb_s": 0.32,
+          "encode_tok_s": 119718.0,
+          "decode_mb_s": 1.26,
+          "tokens_per_char": 0.37
+        },
+        "english": {
+          "input_mb": 1.0,
+          "tokens": 237501,
+          "encode_mb_s": 0.26,
+          "encode_tok_s": 61479.0,
+          "decode_mb_s": 1.2,
+          "tokens_per_char": 0.238
+        },
+        "code": {
+          "input_mb": 1.0,
+          "tokens": 296875,
+          "encode_mb_s": 0.12,
+          "encode_tok_s": 35699.0,
+          "decode_mb_s": 1.35,
+          "tokens_per_char": 0.352
+        },
+        "numbers": {
+          "input_mb": 1.0,
+          "tokens": 920000,
+          "encode_mb_s": 0.29,
+          "encode_tok_s": 266700.0,
+          "decode_mb_s": 0.91,
+          "tokens_per_char": 0.92
+        },
+        "emoji": {
+          "input_mb": 1.0,
+          "tokens": 446425,
+          "encode_mb_s": 0.41,
+          "encode_tok_s": 183428.0,
+          "decode_mb_s": 1.22,
+          "tokens_per_char": 1.562
+        },
+        "long_doc_200k_chars_ms": 384.5,
+        "long_doc_tokens": 12001
+      }
+    },
+    {
+      "name": "compare_tok32k",
+      "description": "tok64k vs tok32k",
+      "checks": 402,
+      "errors": [],
+      "error_counts": {},
+      "warnings": [
+        {
+          "kind": "tok32k is lossy on fuzz input",
+          "input": "1",
+          "examples": [
+            {
+              "input": " \\u0be9.[)\\U0001f44d\\u0bd7\\u0628)\\u0300\\xe7\\u0b8f\\u0b8e\\uae00]<\\u0be7+8(/+\\u0bc6@\\u05d1-\\xe7(\\U0001f525}\\u0c17\\u0bd7;\\u0629\\u0bd0#\\u0bec?\\u0bd7\\U0001f600\\u0b83\\",
+              "decoded": "\\u0be9.[)\\U0001f44d\\u0bd7\\u0628)\\u0300\\xe7\\u0b8f\\u0b8e\\uae00]<\\u0be7+8(/+\\u0bc6@\\u05d1-\\xe7(\\U0001f525}\\u0c17\\u0bd7;\\u0629\\u0bd0#\\u0bec?\\u0bd7\\U0001f600\\u0b83\\u"
+            }
+          ]
+        },
+        {
+          "kind": "tok32k loses leading whitespace (Metaspace prepend=always)",
+          "input": "6",
+          "examples": [
+            " x",
+            "  ",
+            " a b",
+            " 1",
+            " \\u0ba4\\u0bae\\u0bbf\\u0bb4\\u0bcd",
+            "    x"
+          ]
+        }
+      ],
+      "known": [],
+      "notes": [],
+      "metrics": {
+        "vocab_main": 63995,
+        "vocab_other": 32000,
+        "tokens_main": 15386,
+        "tokens_other": 16073,
+        "main_vs_other_token_ratio": 0.9573,
+        "other_roundtrip_failures": 1,
+        "main_leading_space_lossy": [],
+        "other_leading_space_lossy": [
+          " x",
+          "  ",
+          " a b",
+          " 1",
+          " \\u0ba4\\u0bae\\u0bbf\\u0bb4\\u0bcd",
+          "    x"
+        ]
+      }
+    }
+  ]
+}

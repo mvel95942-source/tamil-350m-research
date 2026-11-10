@@ -1,0 +1,11 @@
+{
+  "title": "tamil-tok-code",
+  "id": "velmurugan04/tamil-tok-code",
+  "licenses": [
+    {
+      "name": "CC0-1.0"
+    }
+  ],
+  "isPrivate": true,
+  "description": "Project code snapshot for the Tamil 350M runs: tamil package, kaggle stage scripts, tokenizers, blocklist, and the frozen 15-case reliability holdout (scored, never trained on)."
+}

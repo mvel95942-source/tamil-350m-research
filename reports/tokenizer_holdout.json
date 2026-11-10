@@ -1,0 +1,344 @@
+{
+  "meta": {
+    "dataset": "HuggingFaceFW/fineweb-2",
+    "config": "tam_Taml",
+    "split": "test",
+    "parquet": ".cache\\holdout\\data\\tam_Taml\\test\\000_00000.parquet",
+    "parquet_sha256": "bba0eb727be01a334ae38f1cee3275ce55fb7c9c7d1e4a20b0b8bad5509c96d1",
+    "docs": 20000,
+    "max_chars": 4000,
+    "min_tamil": 0.5,
+    "stats": {
+      "rows": 20131,
+      "kept": 20000,
+      "short": 0,
+      "not_tamil": 131,
+      "duplicate": 0,
+      "language_score_mean": 1.0
+    },
+    "totals": {
+      "chars": 40207389,
+      "words": 4491695,
+      "bytes": 108603006
+    },
+    "elapsed_s": 1258.6
+  },
+  "results": {
+    "ours-tok64k": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 7603914,
+        "tokens_per_word": 1.6929,
+        "tokens_per_word_ci95": [
+          1.6896,
+          1.6963
+        ],
+        "chars_per_token": 5.2877,
+        "bytes_per_token": 14.2825,
+        "cut_letter_rate": 0.000392,
+        "byte_fallback_rate": 0.000137,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 5838953,
+        "tokens_per_word": 1.6701,
+        "tokens_per_word_ci95": [
+          1.6673,
+          1.673
+        ],
+        "chars_per_token": 5.418,
+        "bytes_per_token": 14.7951,
+        "cut_letter_rate": 0.000428,
+        "byte_fallback_rate": 4e-05,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dirs": [
+        "tok64k"
+      ]
+    },
+    "ours-tok32k": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 8324367,
+        "tokens_per_word": 1.8533,
+        "tokens_per_word_ci95": [
+          1.8495,
+          1.8571
+        ],
+        "chars_per_token": 4.8301,
+        "bytes_per_token": 13.0464,
+        "cut_letter_rate": 0.000468,
+        "byte_fallback_rate": 0.000122,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 6410073,
+        "tokens_per_word": 1.8335,
+        "tokens_per_word_ci95": [
+          1.83,
+          1.8368
+        ],
+        "chars_per_token": 4.9353,
+        "bytes_per_token": 13.4769,
+        "cut_letter_rate": 0.000509,
+        "byte_fallback_rate": 3.9e-05,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dirs": [
+        "tok32k"
+      ]
+    },
+    "gpt-4o (o200k)": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 33697884,
+        "tokens_per_word": 7.5023,
+        "tokens_per_word_ci95": [
+          7.4895,
+          7.5149
+        ],
+        "chars_per_token": 1.1932,
+        "bytes_per_token": 3.2228,
+        "cut_letter_rate": 0.41529,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 26791252,
+        "tokens_per_word": 7.663,
+        "tokens_per_word_ci95": [
+          7.6516,
+          7.6735
+        ],
+        "chars_per_token": 1.1808,
+        "bytes_per_token": 3.2245,
+        "cut_letter_rate": 0.418376,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dirs": []
+    },
+    "llama-3": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 53247288,
+        "tokens_per_word": 11.8546,
+        "tokens_per_word_ci95": [
+          11.8334,
+          11.8751
+        ],
+        "chars_per_token": 0.7551,
+        "bytes_per_token": 2.0396,
+        "cut_letter_rate": 0.329967,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 42470722,
+        "tokens_per_word": 12.1478,
+        "tokens_per_word_ci95": [
+          12.1311,
+          12.164
+        ],
+        "chars_per_token": 0.7449,
+        "bytes_per_token": 2.0341,
+        "cut_letter_rate": 0.33147,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dirs": []
+    },
+    "gemma-4 (262k)": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 10588284,
+        "tokens_per_word": 2.3573,
+        "tokens_per_word_ci95": [
+          2.3535,
+          2.3611
+        ],
+        "chars_per_token": 3.7973,
+        "bytes_per_token": 10.2569,
+        "cut_letter_rate": 0.120193,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 8266991,
+        "tokens_per_word": 2.3646,
+        "tokens_per_word_ci95": [
+          2.3605,
+          2.3686
+        ],
+        "chars_per_token": 3.8267,
+        "bytes_per_token": 10.4497,
+        "cut_letter_rate": 0.123446,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dirs": []
+    },
+    "qwen-2.5": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 43617584,
+        "tokens_per_word": 9.7107,
+        "tokens_per_word_ci95": [
+          9.6943,
+          9.7268
+        ],
+        "chars_per_token": 0.9218,
+        "bytes_per_token": 2.4899,
+        "cut_letter_rate": 0.402815,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 34721756,
+        "tokens_per_word": 9.9314,
+        "tokens_per_word_ci95": [
+          9.9183,
+          9.9431
+        ],
+        "chars_per_token": 0.9111,
+        "bytes_per_token": 2.488,
+        "cut_letter_rate": 0.405446,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dirs": []
+    },
+    "indicbert-v2": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 7365768,
+        "tokens_per_word": 1.6399,
+        "tokens_per_word_ci95": [
+          1.6369,
+          1.6429
+        ],
+        "chars_per_token": 5.4587,
+        "bytes_per_token": 14.7443,
+        "cut_letter_rate": 0.066289,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 1.2e-05,
+        "roundtrip_exact": 0.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 5737675,
+        "tokens_per_word": 1.6411,
+        "tokens_per_word_ci95": [
+          1.6379,
+          1.6443
+        ],
+        "chars_per_token": 5.5136,
+        "bytes_per_token": 15.0562,
+        "cut_letter_rate": 0.068798,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 6e-06,
+        "roundtrip_exact": 0.0
+      },
+      "dirs": []
+    },
+    "agaram-2.5b": {
+      "all": {
+        "docs": 20000,
+        "words": 4491695,
+        "chars": 40207389,
+        "bytes": 108603006,
+        "tokens": 7145356,
+        "tokens_per_word": 1.5908,
+        "tokens_per_word_ci95": [
+          1.5878,
+          1.5938
+        ],
+        "chars_per_token": 5.6271,
+        "bytes_per_token": 15.1991,
+        "cut_letter_rate": 0.137277,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dominant": {
+        "docs": 15700,
+        "words": 3496173,
+        "chars": 31635524,
+        "bytes": 86387768,
+        "tokens": 5500799,
+        "tokens_per_word": 1.5734,
+        "tokens_per_word_ci95": [
+          1.5702,
+          1.5764
+        ],
+        "chars_per_token": 5.7511,
+        "bytes_per_token": 15.7046,
+        "cut_letter_rate": 0.143051,
+        "byte_fallback_rate": 0.0,
+        "unk_rate": 0.0,
+        "roundtrip_exact": 1.0
+      },
+      "dirs": []
+    }
+  }
+}

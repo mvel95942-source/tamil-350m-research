@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this work, cite this repository and the upstream datasets listed in docs/DATA.md."
+title: "Tamil 350M: a from-scratch Tamil language model and akshara-safe tokenizer"
+type: software
+authors:
+  - name: "Tamil 350M contributors"
+repository-code: "https://github.com/mvel95942-source/tamil-350m-research"
+url: "https://github.com/mvel95942-source/tamil-350m-research"
+license: Apache-2.0
+version: "0.1.0"
+date-released: "2026-11-10"
+abstract: >-
+  Research record of a 380M-parameter Tamil-first language model trained from scratch on
+  free Kaggle T4 GPUs, including an akshara-safe 32k tokenizer, a 927M-token
+  contamination-controlled corpus, exact training configurations, raw logs, and a frozen
+  15-case reliability evaluation that currently fails.
+keywords:
+  - Tamil
+  - low-resource NLP
+  - tokenization
+  - language model
+  - reproducibility
+  - evaluation

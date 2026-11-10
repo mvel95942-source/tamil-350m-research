@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 190" font-family="Arial, sans-serif" font-size="12">
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#333"/></marker></defs>
+<g fill="#fff" stroke="#333" stroke-width="1.5">
+<rect x="10" y="30" width="105" height="60" rx="6"/><rect x="135" y="30" width="105" height="60" rx="6"/>
+<rect x="260" y="30" width="105" height="60" rx="6"/><rect x="385" y="30" width="105" height="60" rx="6"/>
+<rect x="510" y="30" width="105" height="60" rx="6"/><rect x="635" y="30" width="105" height="60" rx="6"/>
+<rect x="760" y="30" width="105" height="60" rx="6"/><rect x="885" y="30" width="85" height="60" rx="6"/>
+<rect x="125" y="125" width="125" height="48" rx="6" stroke-dasharray="5 3"/>
+</g>
+<g fill="#111" text-anchor="middle">
+<text x="62" y="55">Sources</text><text x="62" y="71" font-size="10">Sangraha, IndicCorp,</text><text x="62" y="83" font-size="10">Wiki, FineWeb-Edu</text>
+<text x="187" y="55">Clean, dedupe,</text><text x="187" y="71">blocklist filter</text>
+<text x="312" y="55">Mix</text><text x="312" y="71" font-size="10">Tamil / Tanglish /</text><text x="312" y="83" font-size="10">English</text>
+<text x="437" y="55">Tokenizer</text><text x="437" y="71" font-size="10">Unigram 32k, 48k</text>
+<text x="562" y="55">Pack tokens</text><text x="562" y="71" font-size="10">EOS between docs</text>
+<text x="687" y="55">Pretrain 350M</text><text x="687" y="71" font-size="10">2xT4, fp16</text>
+<text x="812" y="55">SFT</text><text x="812" y="71" font-size="10">Aya, IndicAlign</text>
+<text x="927" y="55">Eval</text><text x="927" y="71" font-size="10">held-out only</text>
+<text x="187" y="146">Eval blocklist</text><text x="187" y="162" font-size="10">138,282 sentence hashes</text>
+</g>
+<g stroke="#333" stroke-width="1.5" marker-end="url(#a)" fill="none">
+<path d="M115,60 H133"/><path d="M240,60 H258"/><path d="M365,60 H383"/><path d="M490,60 H508"/>
+<path d="M615,60 H633"/><path d="M740,60 H758"/><path d="M865,60 H883"/>
+<path d="M187,125 V92" stroke-dasharray="5 3"/>
+</g></svg>

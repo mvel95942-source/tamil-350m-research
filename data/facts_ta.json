@@ -1,0 +1,69 @@
+{
+  "snapshot_date": "2026-11-07",
+  "note": "Static snapshot for offline use. The chat server refreshes the officeholder facts from the same sources at runtime (24 h cache) when online.",
+  "facts": [
+    {
+      "key": "pm_india",
+      "kind": "officeholder",
+      "office_en": "Prime Minister of India",
+      "office_ta": "இந்தியப் பிரதமர்",
+      "person_en": "Narendra Modi",
+      "person_ta": "நரேந்திர மோதி",
+      "since": "2014-05-26",
+      "answer_ta": "இந்தியப் பிரதமர் நரேந்திர மோதி ஆவார். இவர் 26 மே 2014 முதல் பதவியில் உள்ளார்.",
+      "source_name": "Wikipedia: Prime Minister of India",
+      "source_url": "https://en.wikipedia.org/wiki/Prime_Minister_of_India",
+      "as_of": "2026-11-07"
+    },
+    {
+      "key": "president_india",
+      "kind": "officeholder",
+      "office_en": "President of India",
+      "office_ta": "இந்தியக் குடியரசுத் தலைவர்",
+      "person_en": "Droupadi Murmu",
+      "person_ta": "திரௌபதி முர்மு",
+      "since": "2022-07-25",
+      "answer_ta": "இந்தியக் குடியரசுத் தலைவர் திரௌபதி முர்மு ஆவார். இவர் 25 ஜூலை 2022 முதல் பதவியில் உள்ளார்.",
+      "source_name": "Wikipedia: President of India",
+      "source_url": "https://en.wikipedia.org/wiki/President_of_India",
+      "as_of": "2026-11-07"
+    },
+    {
+      "key": "cm_tamil_nadu",
+      "kind": "officeholder",
+      "office_en": "Chief Minister of Tamil Nadu",
+      "office_ta": "தமிழ்நாடு முதலமைச்சர்",
+      "person_en": "C. Joseph Vijay",
+      "person_ta": "ச. ஜோசப் விஜய்",
+      "since": "2026-05-10",
+      "answer_ta": "தமிழ்நாடு முதலமைச்சர் ச. ஜோசப் விஜய் ஆவார். இவர் 10 மே 2026 முதல் பதவியில் உள்ளார்.",
+      "source_name": "Wikipedia: Chief Minister of Tamil Nadu",
+      "source_url": "https://en.wikipedia.org/wiki/Chief_Minister_of_Tamil_Nadu",
+      "as_of": "2026-11-07"
+    },
+    {
+      "key": "army_chief_india",
+      "kind": "officeholder",
+      "office_en": "Chief of the Army Staff (India)",
+      "office_ta": "இந்திய இராணுவத் தலைவர்",
+      "person_en": "Dhiraj Seth",
+      "person_ta": "தீரஜ் சேத்",
+      "since": "2026-06-30",
+      "answer_ta": "இந்திய இராணுவத் தலைவர் தீரஜ் சேத் ஆவார். இவர் 30 ஜூன் 2026 முதல் பதவியில் உள்ளார்.",
+      "source_name": "Wikipedia: Chief of the Army Staff (India)",
+      "source_url": "https://en.wikipedia.org/wiki/Chief_of_the_Army_Staff_%28India%29",
+      "as_of": "2026-11-07"
+    },
+    {
+      "key": "india_population",
+      "kind": "statistic",
+      "answer_ta": "உலக வங்கியின் 2025 ஆண்டு மதிப்பீட்டின்படி இந்தியாவின் மக்கள்தொகை சுமார் 1,463,865,525 ஆகும். இது நேரடி நொடிநிலை எண் அல்ல.",
+      "answer_en": "World Bank estimate for 2025: 1,463,865,525.",
+      "value": 1463865525,
+      "year": "2025",
+      "source_name": "World Bank",
+      "source_url": "https://data.worldbank.org/indicator/SP.POP.TOTL?locations=IN",
+      "as_of": "2026-11-07"
+    }
+  ]
+}

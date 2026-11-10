@@ -1,0 +1,362 @@
+{
+  "ours-tok32k": {
+    "tamil": {
+      "tokens_per_word": 2.2589065245350652,
+      "bytes_per_token": 10.731448583701724,
+      "chars_per_token": 4.063023025840066,
+      "cut_letter_rate": 6.905276543296735e-05,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 2.4795411134884735,
+      "bytes_per_token": 4.050768193558189,
+      "chars_per_token": 4.044261337739289,
+      "cut_letter_rate": 5.697356426618049e-05,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_real": {
+      "tokens_per_word": 2.8611197350719237,
+      "bytes_per_token": 3.521720258979274,
+      "chars_per_token": 3.5208702571707597,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.7326038585976493,
+      "bytes_per_token": 3.6247944162364703,
+      "chars_per_token": 3.6139139279874164,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.9995
+    }
+  },
+  "ours-tok64k": {
+    "tamil": {
+      "tokens_per_word": 1.9748601296725223,
+      "bytes_per_token": 12.274965127508137,
+      "chars_per_token": 4.6474122822704675,
+      "cut_letter_rate": 6.855276178213336e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 2.3172444441828364,
+      "bytes_per_token": 4.334478523555568,
+      "chars_per_token": 4.3275159363485916,
+      "cut_letter_rate": 5.4613507825607636e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 2.694297837110628,
+      "bytes_per_token": 3.7397733819857883,
+      "chars_per_token": 3.7388707509122336,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.6604836244202377,
+      "bytes_per_token": 3.7822310920936166,
+      "chars_per_token": 3.770878028656861,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  },
+  "gpt-4o (o200k)": {
+    "tamil": {
+      "tokens_per_word": 7.609796367638966,
+      "bytes_per_token": 3.1855437454967785,
+      "chars_per_token": 1.206075534614327,
+      "cut_letter_rate": 0.4003165162788917,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.617719164515759,
+      "bytes_per_token": 2.7763476987532796,
+      "chars_per_token": 2.7718879781976447,
+      "cut_letter_rate": 5.613292928471191e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.5353927351754115,
+      "bytes_per_token": 2.8500548847420415,
+      "chars_per_token": 2.849366995975119,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.4178981253055145,
+      "bytes_per_token": 4.429325831036908,
+      "chars_per_token": 4.416030393524657,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  },
+  "llama-3": {
+    "tamil": {
+      "tokens_per_word": 11.936929592470399,
+      "bytes_per_token": 2.0307851391472904,
+      "chars_per_token": 0.7688735324530723,
+      "cut_letter_rate": 0.25520190496947914,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.9275823402858916,
+      "bytes_per_token": 2.5573101737716466,
+      "chars_per_token": 2.553202298971158,
+      "cut_letter_rate": 5.17043708926872e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.9273000103487528,
+      "bytes_per_token": 2.565646451204891,
+      "chars_per_token": 2.565027207209581,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.39562151672544,
+      "bytes_per_token": 4.500025771263635,
+      "chars_per_token": 4.486518114855493,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  },
+  "gemma-2": {
+    "tamil": {
+      "tokens_per_word": 4.328913793966078,
+      "bytes_per_token": 5.599866473946783,
+      "chars_per_token": 2.1201598505378434,
+      "cut_letter_rate": 0.21842455574032854,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.6400954738226905,
+      "bytes_per_token": 2.7592809994599086,
+      "chars_per_token": 2.754848693593612,
+      "cut_letter_rate": 5.578787026166937e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.5470868260374626,
+      "bytes_per_token": 2.8406587795947544,
+      "chars_per_token": 2.8399731586701873,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.4031091776161446,
+      "bytes_per_token": 4.476011483913665,
+      "chars_per_token": 4.462575910813242,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  },
+  "gemma-3 (262k)": {
+    "tamil": {
+      "tokens_per_word": 2.6658533929407056,
+      "bytes_per_token": 9.093275454542443,
+      "chars_per_token": 3.4427959342062993,
+      "cut_letter_rate": 0.11421051643793725,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.6018205951515543,
+      "bytes_per_token": 2.7886026002126125,
+      "chars_per_token": 2.7841231942854483,
+      "cut_letter_rate": 4.902669748811716e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.530632308806789,
+      "bytes_per_token": 2.853897674145941,
+      "chars_per_token": 2.853208857884015,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.4127188873793677,
+      "bytes_per_token": 4.445564399471371,
+      "chars_per_token": 4.432220218904275,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  },
+  "gemma-4 (262k)": {
+    "tamil": {
+      "tokens_per_word": 2.665885766924972,
+      "bytes_per_token": 9.093165027621625,
+      "chars_per_token": 3.4427541255801426,
+      "cut_letter_rate": 0.11420912948823818,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.6018529691358205,
+      "bytes_per_token": 2.788577535842279,
+      "chars_per_token": 2.7840981701766743,
+      "cut_letter_rate": 4.9026256828949026e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.530632308806789,
+      "bytes_per_token": 2.853897674145941,
+      "chars_per_token": 2.853208857884015,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.4127188873793677,
+      "bytes_per_token": 4.445564399471371,
+      "chars_per_token": 4.432220218904275,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  },
+  "qwen-2.5": {
+    "tamil": {
+      "tokens_per_word": 9.736134369693241,
+      "bytes_per_token": 2.489832032197003,
+      "chars_per_token": 0.9426728179692841,
+      "cut_letter_rate": 0.31288877657313763,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 4.026072829692241,
+      "bytes_per_token": 2.49475026955902,
+      "chars_per_token": 2.4907428863831576,
+      "cut_letter_rate": 5.043951826605018e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.9886163717272067,
+      "bytes_per_token": 2.5262051787660216,
+      "chars_per_token": 2.525595454309584,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.4445659690717099,
+      "bytes_per_token": 4.347556931740761,
+      "chars_per_token": 4.334506938644322,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  },
+  "mt5": {
+    "tamil": {
+      "tokens_per_word": 2.627022270358086,
+      "bytes_per_token": 9.227686988786779,
+      "chars_per_token": 3.4936853508879047,
+      "cut_letter_rate": 0.10784477379182551,
+      "roundtrip_exact": 0.003
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.3129799075281285,
+      "bytes_per_token": 3.0317256842746745,
+      "chars_per_token": 3.0268557433233747,
+      "cut_letter_rate": 5.330106841991648e-05,
+      "roundtrip_exact": 0.003
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.3393873538238643,
+      "bytes_per_token": 3.017338890868804,
+      "chars_per_token": 3.0166106264623394,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.999
+    },
+    "english": {
+      "tokens_per_word": 1.623552126708225,
+      "bytes_per_token": 3.8682668014657384,
+      "chars_per_token": 3.856655485996639,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.0
+    }
+  },
+  "indicbert-v2": {
+    "tamil": {
+      "tokens_per_word": 1.875760420744072,
+      "bytes_per_token": 12.923473038108149,
+      "chars_per_token": 4.892943214339509,
+      "cut_letter_rate": 0.07586483908219109,
+      "roundtrip_exact": 0.001
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 2.912028112390701,
+      "bytes_per_token": 3.44915841794297,
+      "chars_per_token": 3.44361794377864,
+      "cut_letter_rate": 6.0639994501973835e-05,
+      "roundtrip_exact": 0.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 2.8551174583462693,
+      "bytes_per_token": 3.529123926202472,
+      "chars_per_token": 3.5282721374460837,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.0025
+    },
+    "english": {
+      "tokens_per_word": 1.369197267167261,
+      "bytes_per_token": 4.586872135078048,
+      "chars_per_token": 4.573103793308904,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.0
+    }
+  },
+  "sarvam-1": {
+    "tamil": {
+      "tokens_per_word": 2.7039251984378083,
+      "bytes_per_token": 8.965240324488946,
+      "chars_per_token": 3.3943206815443374,
+      "cut_letter_rate": 0.11534421711545306,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 4.745449247893483,
+      "bytes_per_token": 2.1165638388393977,
+      "chars_per_token": 2.1131639465047223,
+      "cut_letter_rate": 4.279324536530547e-05,
+      "roundtrip_exact": 0.9995
+    },
+    "tanglish_real": {
+      "tokens_per_word": 4.665890510193521,
+      "bytes_per_token": 2.159515597795349,
+      "chars_per_token": 2.1589943774744103,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.7160541661966442,
+      "bytes_per_token": 3.6597520730443267,
+      "chars_per_token": 3.648766652947991,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 0.9995
+    }
+  },
+  "agaram-2.5b": {
+    "tamil": {
+      "tokens_per_word": 1.9133171855823932,
+      "bytes_per_token": 12.669796417501788,
+      "chars_per_token": 4.796898962475292,
+      "cut_letter_rate": 0.15881280716192,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_synth": {
+      "tokens_per_word": 3.2999920536584075,
+      "bytes_per_token": 3.0436577160857174,
+      "chars_per_token": 3.038768608396922,
+      "cut_letter_rate": 5.351084664861568e-05,
+      "roundtrip_exact": 1.0
+    },
+    "tanglish_real": {
+      "tokens_per_word": 3.04387871261513,
+      "bytes_per_token": 3.310270968619318,
+      "chars_per_token": 3.3094720021759088,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    },
+    "english": {
+      "tokens_per_word": 1.5494635205412042,
+      "bytes_per_token": 4.053230494901162,
+      "chars_per_token": 4.041063976829699,
+      "cut_letter_rate": 0.0,
+      "roundtrip_exact": 1.0
+    }
+  }
+}

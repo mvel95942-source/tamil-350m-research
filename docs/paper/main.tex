@@ -1,0 +1,428 @@
+% Build with LuaLaTeX or XeLaTeX (Tamil text needs a Unicode engine and a Tamil font).
+% Needs acl.sty and acl_natbib.bst from https://github.com/acl-org/acl-style-files (not vendored here).
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc}
+
+% Tamil font: any installed font with Tamil glyphs works (Noto Sans Tamil, Latha, Nirmala UI).
+\newfontfamily\tamilfont[Script=Tamil]{Noto Sans Tamil}
+\newcommand{\ta}[1]{{\tamilfont #1}}
+% Every unmeasured number is a red PENDING cell. Never replace one with an estimate.
+\newcommand{\pending}{\textcolor{red}{\textbf{PENDING}}}
+\newcommand{\smoke}{\textsc{smoke}}
+
+\title{Akshara-Aware Tokenization for Tamil, Tanglish and English:\\
+Fewer Tokens, No Broken Letters, and a Small Language Model Built on It}
+
+\author{Anonymous submission}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Byte-level tokenizers split Tamil letters.
+A Tamil letter (akshara) is one to three Unicode code points, and each code point takes three bytes in UTF-8.
+A merge can therefore end between a consonant and its vowel sign or its pulli, and the token then holds half a letter.
+We map every Tamil akshara (312 units) to one Private Use Area code point inside the tokenizer's normalizer, train a Unigram model on the mapped text with byte fallback, and map back on decode.
+No learned token can cut a letter, and decoding is exact.
+We train 32k and 48k vocabularies on a mix of Tamil, synthetic and real romanized Tamil (Tanglish), and English.
+In a small \smoke{} test (28 prose lines from one Tamil Wikipedia article, not a benchmark), the 48k tokenizer uses 2.07 tokens per word with 0\% cut letters; Gemma~3 uses 2.60 with 11.5\%, Sarvam-1 2.65 with 13.8\%, and GPT-4o 7.65 with 40.5\%.
+On 2,000 held-out documents per set, the 32k tokenizer uses 2.26 tokens per Tamil word against 2.67 for Gemma~3 and Gemma~4 (262k vocabulary) and 7.61 for GPT-4o, with 0\% cut letters against 7.6--58.8\%. A Tamil-first 64k tokenizer (Agaram 2.5B) uses fewer Tamil tokens (1.91) but cuts 15.9\% of letters, and ours is lower on real Tanglish. A controlled tokenizer ablation and a 350M-parameter Qwen3-style model trained on this tokenizer are specified here and not yet run. Their cells are marked pending.
+We also report one measured engineering result: on Tesla T4 GPUs, expanding grouped-query K/V heads before attention made training 2.35$\times$ faster (3,120 to 7,336 tokens/s).
+\end{abstract}
+
+%% ------------------------------------------------------------------
+\section{Introduction}
+
+Tamil is written in an abugida.
+A letter is a consonant, optionally followed by a vowel sign or a pulli (the dot that removes the inherent vowel).
+In Unicode, one letter is one to three code points, and each code point is three bytes in UTF-8.
+The word \ta{தமிழ்} (``Tamil'') is three letters, five code points and 15 bytes.
+
+Byte-level BPE vocabularies are trained on bytes or code points and know nothing about letters \cite{sennrich2016bpe,kudo2018sentencepiece}.
+Because they work on bytes or code points, a token boundary can fall between a consonant and its vowel sign.
+Figure~\ref{fig:example} shows this for GPT-4o's public tokenizer: the pulli of \ta{ழ்} is a separate token.
+A token that holds half a letter has no meaning of its own, so the model must learn to put letters back together.
+Prior work shows that tokenizers give unequal costs and unequal quality across languages \cite{rust2021good,petrov2023unfair,ahia2023cost}.
+
+We do not assume the largest tokenizers are bad.
+Some public vocabularies are large (Gemma~3 has 262k entries) and treat Tamil far better than older ones.
+We measure the public ones we can load, and say so where we cannot.
+Our claim is narrower: a 32k--48k vocabulary can beat much larger multilingual vocabularies on Tamil, never cut a letter, and be rebuilt from public data by anyone with a free GPU quota.
+
+\paragraph{Contributions.} Each is tied to its evidence.
+\begin{itemize}
+\item \textbf{C1. Akshara-safe tokenizer.} A normalizer maps each of 312 Tamil units to one PUA code point (Section~\ref{sec:method}, Figure~\ref{fig:example}). Cut-letter rate is 0\% by construction and 0\% in the \smoke{} test (Table~\ref{tab:smoke}).
+\item \textbf{C2. Fewer tokens at a smaller vocabulary than multilingual tokenizers.} On 2,000 held-out documents, 2.26 Tamil tokens per word at 32k against 2.67 for Gemma~3/4 (262k), with 0\% cut letters (Table~\ref{tab:fertility}). A Tamil-first 64k tokenizer \citep{agaram2026} uses fewer Tamil tokens but cuts 15.9\% of letters.
+\item \textbf{C3. Controlled ablation} against the Llama~3 tokenizer, same model and same bytes: pending (Table~\ref{tab:ablation}).
+\item \textbf{C4. A 350M model} trained from scratch on the tokenizer, with bits-per-byte and four labeled Tamil tasks: pending (Table~\ref{tab:model}).
+\item \textbf{C5. A measured T4 attention finding}: expanding K/V heads before SDPA gives 2.35$\times$ throughput (Section~\ref{sec:eng}, Table~\ref{tab:speed}, Figure~\ref{fig:speed}).
+\item \textbf{C6. Open pipeline with contamination control}: a sentence-hash blocklist of 138,282 hashes over all evaluation and held-out text (Section~\ref{sec:method}).
+\end{itemize}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[font=\small, node distance=4mm,
+  box/.style={draw, rounded corners=2pt, minimum height=7mm, align=center, inner sep=3pt},
+  arr/.style={-{Latex[length=2mm]}, thick}]
+\node[box] (src) {Sources\\Sangraha, IndicCorp,\\Wikipedia, FineWeb-Edu,\\Dakshina};
+\node[box, right=of src] (clean) {Clean, dedupe,\\blocklist filter};
+\node[box, right=of clean] (mix) {Mix\\Tamil / Tanglish /\\English};
+\node[box, right=of mix] (tok) {Train tokenizer\\Unigram 32k, 48k};
+\node[box, right=of tok] (pack) {Pack tokens\\(EOS between docs)};
+\node[box, right=of pack] (pre) {Pretrain 350M\\2$\times$T4, fp16};
+\node[box, right=of pre] (sft) {SFT\\Aya, IndicAlign};
+\node[box, right=of sft] (ev) {Evaluate\\held-out only};
+\draw[arr] (src)--(clean); \draw[arr] (clean)--(mix); \draw[arr] (mix)--(tok);
+\draw[arr] (tok)--(pack); \draw[arr] (pack)--(pre); \draw[arr] (pre)--(sft); \draw[arr] (sft)--(ev);
+\node[box, below=7mm of clean, dashed] (bl) {Eval blocklist\\138,282 sentence hashes};
+\draw[arr, dashed] (bl)--(clean);
+\end{tikzpicture}
+\caption{Pipeline. The blocklist is built from every evaluation and held-out text before any training text is read.}
+\label{fig:pipeline}
+\end{figure*}
+
+%% ------------------------------------------------------------------
+\section{Related Work}
+
+\paragraph{Subword tokenization.}
+BPE \cite{sennrich2016bpe} and the Unigram language model \cite{kudo2018subword} are the standard subword methods; SentencePiece packages both \cite{kudo2018sentencepiece}. We use the Unigram trainer from Hugging Face \texttt{tokenizers}, and add a normalizer that changes what a ``character'' is for Tamil.
+
+\paragraph{Tokenizer fairness and cost.}
+Rust et al.\ \cite{rust2021good} link tokenizer quality to monolingual performance. Petrov et al.\ \cite{petrov2023unfair} and Ahia et al.\ \cite{ahia2023cost} show large differences in token counts for the same content across languages. We follow their use of tokens per word as a cost measure, and add a measure for broken letters.
+
+\paragraph{Indic resources.}
+IndicCorp \cite{kakwani2020indicnlpsuite}, IndicBERT~v2 and IndicXTREME \cite{doddapaneni2023indicxtreme}, and IndicLLMSuite with Sangraha and IndicAlign \cite{khan2024indicllmsuite} supply our text. IndicXNLI \cite{aggarwal2022indicxnli}, Belebele \cite{bandarkar2024belebele} and Aksharantar \cite{madhani2022aksharantar} supply evaluation. Dakshina \cite{roark2020dakshina} supplies real romanized Tamil. Aya \cite{singh2024aya} supplies instruction data.
+
+\paragraph{Public frontier-family tokenizers.}
+We can measure only tokenizers that are public: GPT-4o's \cite{gpt4o} through a public mirror, and the Gemma family \cite{gemma2,gemma3}, Llama~3 \cite{llama3} and Qwen \cite{qwen3} through their released files. We make no claim about tokenizers of hosted models that are not public.
+
+\paragraph{Tamil-first models.} Agaram 2.5B \citep{agaram2026} is a Tamil--English model trained from scratch on 50B tokens with its own 64k byte-level BPE tokenizer. It is the closest prior work; we measure its tokenizer in Table~\ref{tab:fertility}.
+
+\paragraph{Training efficiency.}
+Memory-efficient attention \cite{rabe2021selfattention} and FlashAttention \cite{dao2022flashattention} avoid storing the full score matrix. GQA \cite{ainslie2023gqa} shares K/V heads across query heads. ZeRO \cite{rajbhandari2020zero} shards optimizer state. Section~\ref{sec:eng} shows how GQA interacts with kernel choice on T4.
+
+%% ------------------------------------------------------------------
+\section{Method}
+\label{sec:method}
+
+\subsection{Akshara-to-PUA mapping}
+\label{sec:pua}
+\paragraph{Segmentation.}
+After NFC normalization, a regular expression finds each akshara: a consonant with an optional vowel sign or pulli, a vowel, or the aytham.
+We enumerate all vowels, the aytham, and for each consonant the bare consonant, the consonant with pulli, and the consonant with each vowel sign.
+This gives 312 units.
+Each unit gets one code point in the Private Use Area, starting at U+E000.
+
+\paragraph{In the tokenizer.}
+The normalizer is NFC followed by one \texttt{Replace} per unit (longest unit first).
+After that, a letter is a single character, so the Unigram trainer can only build pieces from whole letters.
+The pre-tokenizer is Metaspace plus individual digits.
+The model has 256 byte-fallback pieces (\texttt{<0xNN>}) for characters outside the alphabet.
+The decoder maps pieces back: replace the space marker, resolve byte pieces, fuse, replace each PUA code point with its original code points, strip one leading space.
+
+\paragraph{Worked example.}
+\ta{தமிழ்} is U+0BA4 U+0BAE U+0BBF U+0BB4 U+0BCD.
+Our segmentation gives \ta{த} $|$ \ta{மி} $|$ \ta{ழ்}, which map to U+E068, U+E09E, U+E0F6.
+GPT-4o's tokenizer (\texttt{Xenova/gpt-4o}, loaded with \texttt{tokenizers}) gives two tokens: the bytes \texttt{E0 AE A4 E0 AE AE E0 AE BF E0 AE B4} and \texttt{E0 AF 8D}.
+The second token is the pulli alone, so \ta{ழ்} is cut.
+Our 32k and 48k tokenizers encode the same word as one token, \ta{▁தமிழ்} (checked by running the trained tokenizers; decoding returns the exact input).
+This is one word, shown to explain the mechanism, and is not evidence of average behavior.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\footnotesize, node distance=2mm,
+  cell/.style={draw, minimum height=6mm, minimum width=9mm, align=center, inner sep=2pt},
+  bad/.style={fill=red!15},
+  good/.style={fill=green!15}]
+\node[anchor=west] at (0,2.9) {Word: \ta{தமிழ்}\ (5 code points, 15 bytes)};
+\node[anchor=west] at (0,2.3) {Aksharas:};
+\node[cell, anchor=west] at (1.6,2.3) {\ta{த}};
+\node[cell, anchor=west] at (2.5,2.3) {\ta{மி}};
+\node[cell, anchor=west] at (3.4,2.3) {\ta{ழ்}};
+\node[anchor=west] at (4.5,2.3) {$\rightarrow$ U+E068, U+E09E, U+E0F6};
+\node[anchor=west] at (0,1.5) {GPT-4o:};
+\node[cell, bad, anchor=west, minimum width=3.2cm] at (1.6,1.5) {\ta{த}\,\ta{ம}\,\ta{ி}\,\ta{ழ} (12 bytes)};
+\node[cell, bad, anchor=west] at (4.9,1.5) {\ta{்}};
+\node[anchor=west] at (5.6,1.5) {cut};
+\node[anchor=west] at (0,0.7) {Ours:};
+\node[cell, good, anchor=west, minimum width=2.4cm] at (1.6,0.7) {\ta{▁தமிழ்}};
+\node[anchor=west] at (4.1,0.7) {1 token, no cut};
+\end{tikzpicture}
+\caption{The same word under GPT-4o's tokenizer and ours. Computed by running both tokenizers.}
+\label{fig:example}
+\end{figure}
+
+\subsection{Tokenizer training}
+Unigram, vocabulary 32,000 and 48,000, \texttt{max\_piece\_length} 16, initial alphabet equal to the 312 PUA code points.
+The 256 byte pieces are added after training, so the final size equals the target (both reached it exactly).
+The training sample is about 1\,GB with a mix of 45\% Tamil, 25\% Tanglish and 30\% English by characters (the build script defaults to 2\,GB and reads a size override).
+We pick 48k over 32k only if Tamil tokens per word falls by at least 8\%; this rule is fixed before the benchmark is run.
+
+\subsection{Tanglish synthesis}
+Romanized Tamil has no standard spelling.
+We romanize Tamil documents with three schemes (\texttt{iso}, \texttt{casual}, \texttt{chat}) and seeded noise: variant spellings (\texttt{zh}/\texttt{l}/\texttt{z}, \texttt{th}/\texttt{t}/\texttt{d}, long vowels shortened), doubled letters collapsed and a dropped final \texttt{u}.
+In the mix, 80\% of Tanglish documents are synthesized from Tamil and the rest are real romanized text from Dakshina \cite{roark2020dakshina}.
+
+\subsection{Data and contamination control}
+\label{sec:data}
+Pretraining text: Sangraha verified Tamil \cite{khan2024indicllmsuite}, IndicCorp~v2 Tamil \cite{kakwani2020indicnlpsuite}, Tamil Wikipedia except its first 2,000 articles, FineWeb-Edu English \cite{penedo2024fineweb}, and the Dakshina dev romanized split.
+Cleaning keeps documents of at least 50 characters, at least 70\% letters in the expected script, and at most 30\% repeated lines; exact duplicates (hash of normalized text) are dropped.
+We do not run near-duplicate detection.
+
+Held out and never trained on: the first 2,000 Tamil Wikipedia articles, English Wikipedia, and the Dakshina test split (fertility and bits-per-byte); IndicXNLI, IndicSentiment, IndicQA, Belebele-ta and Aksharantar (labeled).
+For all of them we hash every sentence of at least 12 characters (NFC, lowercased, whitespace-normalized, 64-bit BLAKE2b) into a blocklist of 138,282 hashes.
+Any training document containing a blocked sentence is dropped.
+SFT uses Aya (Tamil) \cite{singh2024aya} and IndicAlign \cite{khan2024indicllmsuite} through the same blocklist.
+
+%% ------------------------------------------------------------------
+\section{Experimental Setup}
+
+\paragraph{Baselines.}
+GPT-4o (o200k, \texttt{Xenova/gpt-4o}), Llama~3 (\texttt{unsloth/Llama-3.2-1B}), Gemma~2 (\texttt{unsloth/gemma-2-2b}), Gemma~3 (\texttt{unsloth/gemma-3-1b-it}), Qwen2.5 (\texttt{Qwen/Qwen2.5-0.5B}), mT5 (\texttt{google/mt5-small}), IndicBERT~v2 (\texttt{ai4bharat/IndicBERTv2-MLM-only}) and Sarvam-1 (\texttt{sarvamai/sarvam-1}).
+A baseline that fails to load is reported as skipped (Qwen3 failed in the \smoke{} run).
+
+\paragraph{Tokenizer metrics.}
+\emph{Tokens per word}: tokens over whitespace-separated words (lower is better).
+\emph{Bytes per token}.
+\emph{Cut-letter rate}: share of tokens whose first character is a Tamil vowel sign or pulli, so the token starts in the middle of a letter. For our tokenizers we read token text after mapping PUA back, since offsets point at the last code point of an akshara.
+\emph{Round-trip}: decode(encode(x)) equals NFC(x) exactly.
+Held-out sets: Tamil Wikipedia (2,000 documents, 2,000 characters each at most), synthetic Tanglish made from them, real Tanglish (Dakshina test), English Wikipedia.
+
+\paragraph{Bits per byte.}
+Total negative log-likelihood in bits divided by UTF-8 bytes of the text, so models with different tokenizers are comparable. Documents are scored in chunks of 1,024 tokens.
+
+\paragraph{Labeled tasks.}
+IndicXNLI, IndicSentiment, Belebele-ta: 5-shot, length-normalized log-likelihood per answer byte, shots taken from the head of each test set and excluded from scoring, at most 500 items.
+Aksharantar: Latin-to-Tamil transliteration exact match.
+Prompt wording is ours and fixed in the code. IndicQA is blocklisted but has no scoring code yet.
+
+\paragraph{Model.}
+Qwen3-style \cite{qwen3} dense decoder, about 350M parameters: hidden size 1024, 20 layers, 16 query heads, 8 KV heads, head dim 128, FFN 3072 with SwiGLU \cite{shazeer2020glu}, RoPE \cite{su2021rope} with base 1,000,000, QK-norm, tied embeddings, context 1,024 (Figure~\ref{fig:arch}).
+We chose it because QK-norm helps fp16 stability on T4, which has no bf16.
+
+\paragraph{Training.}
+fp16 with loss scaling, 2$\times$T4 on Kaggle, DDP, ZeRO-1 optimizer sharding \cite{rajbhandari2020zero}, chunked cross-entropy (2,048 tokens per chunk).
+AdamW ($\beta$ = 0.9, 0.95), weight decay 0.1, peak LR $6\times10^{-4}$, cosine to $6\times10^{-5}$, 500 warmup steps, gradient clip 1.0.
+Micro-batch 4, accumulation 32, so 262,144 tokens per step.
+Planned budget about 1.5B tokens, below the compute-optimal size for this model \cite{hoffmann2022chinchilla}; the model is under-trained on purpose.
+Training resumes across Kaggle's 12-hour sessions. Single run, one seed.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\footnotesize, node distance=3mm,
+  box/.style={draw, rounded corners=2pt, minimum width=3.6cm, minimum height=6mm, align=center},
+  arr/.style={-{Latex[length=2mm]}}]
+\node[box] (emb) {Token embedding (tied with output)};
+\node[box, above=of emb] (n1) {RMSNorm};
+\node[box, above=of n1, fill=blue!8] (att) {GQA: 16 query / 8 KV heads\\QK-norm, RoPE, causal};
+\node[box, above=of att] (n2) {RMSNorm};
+\node[box, above=of n2, fill=blue!8] (ffn) {SwiGLU FFN (3072)};
+\node[box, above=of ffn] (out) {RMSNorm, output head (tied)};
+\draw[arr] (emb)--(n1); \draw[arr] (n1)--(att); \draw[arr] (att)--(n2);
+\draw[arr] (n2)--(ffn); \draw[arr] (ffn)--(out);
+\node[draw, dashed, fit=(n1)(att)(n2)(ffn), inner sep=3mm, label={[font=\scriptsize]right:$\times 20$ layers}] {};
+\end{tikzpicture}
+\caption{Decoder (hidden 1024, head dim 128, about 350M parameters). Residual connections around attention and FFN are not drawn.}
+\label{fig:arch}
+\end{figure}
+
+%% ------------------------------------------------------------------
+\section{Results}
+
+\subsection{Smoke test (not the benchmark)}
+Table~\ref{tab:smoke} is a quick check on 28 Tamil prose lines from one Tamil Wikipedia article with wiki markup stripped.
+It has one article, no confidence interval and no Tanglish or English.
+It shows that the pipeline runs and what size of difference to look for.
+It does not support a general claim.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+Tokenizer & Tok/word & Cut letters & Round-trip \\
+\midrule
+Ours 48k & 2.07 & 0\% & 100\% \\
+Ours 32k & 2.19 & 0\% & 100\% \\
+Gemma 3 (262k vocab) & 2.60 & 11.5\% & 100\% \\
+Sarvam-1 & 2.65 & 13.8\% & 100\% \\
+Gemma 2 & 4.23 & 20.8\% & 100\% \\
+GPT-4o (o200k) & 7.65 & 40.5\% & 100\% \\
+\bottomrule
+\end{tabular}
+\caption{\smoke{} test: 28 lines, one article. Not the benchmark. Qwen3 failed to load and is skipped.}
+\label{tab:smoke}
+\end{table}
+
+On these lines, ours-48k uses 20.4\% fewer tokens than Gemma~3 and 21.9\% fewer than Sarvam-1; ours-32k uses 15.8\% and 17.4\% fewer (arithmetic on Table~\ref{tab:smoke}).
+Gemma~3's vocabulary is 5.5 times larger than our 48k and 8.2 times larger than our 32k.
+Gemma~3 is far better than GPT-4o here (2.60 against 7.65) but is still about 2.6 tokens per word, and 11.5\% of its tokens start inside a letter.
+We read this as: a recent large public vocabulary closes most of the gap with older tokenizers, and the remaining difference is the broken letters and a modest token saving.
+Whether the saving holds on 2,000 documents is the question for Table~\ref{tab:fertility}.
+
+\subsection{Fertility benchmark}
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{lcccccccc}
+\toprule
+ & & \multicolumn{4}{c}{Tokens per word} & Tamil & Tamil cut & \\
+\cmidrule(lr){3-6}
+Tokenizer & Vocab & Tamil & Tanglish (synth) & Tanglish (real) & English & bytes/tok & letters & Round-trip \\
+\midrule
+Ours 32k & 32,000 & 2.26 & 2.48 & 2.86 & 1.73 & 10.73 & 0.0\% & 100.0\% \\
+Ours 48k & 48,000 & 2.13 & 2.32 & 2.70 & 1.64 & 11.38 & 0.0\% & 100.0\% \\
+Agaram 2.5B & 64,000 & 1.91 & 3.30 & 3.04 & 1.55 & 12.67 & 15.9\% & 100.0\% \\
+LFM2.5 1.2B & 64,402 & 18.61 & 4.09 & 4.06 & 1.43 & 1.30 & 16.4\% & 100.0\% \\
+Sarvam-1 & 68,096 & 2.70 & 4.75 & 4.67 & 1.72 & 8.97 & 11.5\% & 100.0\% \\
+LFM2.5 2.6B & 125,017 & 5.18 & 3.90 & 3.91 & 1.40 & 4.68 & 58.8\% & 100.0\% \\
+LFM3 1.7B & 125,033 & 5.18 & 3.90 & 3.91 & 1.40 & 4.68 & 58.8\% & 100.0\% \\
+Llama 3 & 128,256 & 11.94 & 3.93 & 3.93 & 1.40 & 2.03 & 25.5\% & 100.0\% \\
+Qwen2.5 & 151,665 & 9.74 & 4.03 & 3.99 & 1.44 & 2.49 & 31.3\% & 100.0\% \\
+GPT-4o (o200k) & 200,000 & 7.61 & 3.62 & 3.54 & 1.42 & 3.19 & 40.0\% & 100.0\% \\
+IndicBERT v2 & 250,000 & 1.88 & 2.91 & 2.86 & 1.37 & 12.92 & 7.6\% & 0.1\% \\
+Gemma 2 & 256,000 & 4.33 & 3.64 & 3.55 & 1.40 & 5.60 & 21.8\% & 100.0\% \\
+Gemma 3 & 262,145 & 2.67 & 3.60 & 3.53 & 1.41 & 9.09 & 11.4\% & 100.0\% \\
+Gemma 4 & 262,144 & 2.67 & 3.60 & 3.53 & 1.41 & 9.09 & 11.4\% & 100.0\% \\
+\bottomrule
+\end{tabular}
+\caption{Fertility on 2,000 held-out documents per set (first 2,000 non-empty articles of Tamil and English Wikipedia 20231101; Dakshina Tamil test split for real Tanglish; synthetic Tanglish is our romanizer applied to the Tamil set). mT5 was not measured (its SentencePiece model failed to load). Gemma~3 and Gemma~4 give identical numbers. Source: \texttt{reports/fertility.md}, \texttt{reports/fertility\_agaram.md}, \texttt{reports/fertility\_lfm.md}. LFM2.5 2.6B and LFM3 1.7B give identical numbers.}
+\label{tab:fertility}
+\end{table*}
+
+On 2,000 documents per set, ours-32k uses 2.26 Tamil tokens per word: 15.4\% fewer than Gemma 3/4 (2.67), 16.3\% fewer than Sarvam-1 (2.70) and 70\% fewer than GPT-4o (7.61), at one eighth of Gemma's vocabulary and with 0\% cut letters against 7.6--58.8\% for every baseline. Two baselines need care. Agaram 2.5B, a Tamil-first tokenizer with 64k entries, uses fewer Tamil tokens than ours (1.91 against 2.26 at 32k and 2.13 at 48k), but 15.9\% of its tokens start inside a letter; on real Tanglish ours is lower (2.86 against 3.04). IndicBERT v2 uses the fewest Tamil tokens (1.88) but reproduces only 0.1\% of documents exactly, so it cannot serve a generative model. Liquid AI's LFM tokenizers, used by small on-device models, are the weakest recent ones on Tamil: 18.61 tokens per Tamil word for LFM2.5 1.2B and 5.18 for LFM3 1.7B and LFM2.5 2.6B (which share one tokenizer), with 58.8\% of tokens starting inside a letter for the latter. On English our tokenizers are worse than every large vocabulary (1.73 at 32k against 1.37--1.55). The 48k vocabulary is 5.7\% lower than 32k on Tamil; our pre-registered rule required 8\%, so we train the model on 32k.
+
+\subsection{Tokenizer ablation (pending)}
+Same model size, same shards (same UTF-8 bytes), one epoch each, our tokenizer against the Llama~3 tokenizer.
+The comparison is on bits per byte because token counts differ.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+Tokenizer & BPB Tamil & BPB Tanglish & BPB English \\
+\midrule
+Ours & \pending & \pending & \pending \\
+Llama 3 & \pending & \pending & \pending \\
+\bottomrule
+\end{tabular}
+\caption{Ablation, equal bytes. Model size (30M or 350M), shard count and tokens seen: \pending. PENDING (run: \texttt{kaggle/03\_ablation.py}, then \texttt{kaggle/04\_eval.py}).}
+\label{tab:ablation}
+\end{table}
+
+\subsection{350M model (pending)}
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{lccccccc}
+\toprule
+ & BPB & BPB & BPB & IndicXNLI & IndicSentiment & Belebele-ta & Aksharantar \\
+Model & Tamil & Tanglish & English & acc. & acc. & acc. & exact match \\
+\midrule
+Ours 350M (pretrained) & \pending & \pending & \pending & \pending & \pending & \pending & \pending \\
+Ours 350M (+ SFT) & \pending & \pending & \pending & \pending & \pending & \pending & \pending \\
+Chance (3, 2, 4 choices) & -- & -- & -- & 33.3 & 50.0 & 25.0 & -- \\
+\bottomrule
+\end{tabular}
+\caption{Bits per byte and labeled tasks, 5-shot, at most 500 items. PENDING (run: \texttt{kaggle/02\_train.py}, \texttt{kaggle/05\_sft.py}, \texttt{kaggle/04\_eval.py}). No same-size baseline model has been chosen yet.}
+\label{tab:model}
+\end{table*}
+
+%% ------------------------------------------------------------------
+\section{Engineering Note: GQA Attention on T4}
+\label{sec:eng}
+
+\paragraph{Setting.}
+Measured on Kaggle 2$\times$T4 with random tokens, the 350M model and context 1,024.
+These are throughput numbers; no model quality is involved.
+
+\paragraph{Finding.}
+Hugging Face \texttt{transformers} with the \texttt{sdpa} backend passes \texttt{enable\_gqa=True} to PyTorch's scaled dot-product attention when there is no attention mask, which is the case in packed pretraining.
+On T4, the memory-efficient kernel rejected that call (``No available kernel''), so PyTorch ran the math kernel, which stores a full sequence-by-sequence score grid per head.
+Throughput was 3,120 tokens/s, and micro-batch 4 ran out of memory without activation checkpointing.
+We replaced the attention function with one that repeats K/V heads to match the query heads and calls SDPA without the flag.
+The memory-efficient kernel then ran: 7,336 tokens/s at micro-batch 4, 2.35 times faster, with no checkpointing.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+Setup & Micro-batch & Tokens/s \\
+\midrule
+HF \texttt{sdpa}, \texttt{enable\_gqa} (math kernel) & 4 & 3,120 (OOM without ckpt.) \\
++ chunked loss + ZeRO-1 only & -- & 3,058 \\
+K/V expanded before SDPA & 4 & \textbf{7,336} \\
+K/V expanded + checkpointing & 8 & 5,947 \\
+\bottomrule
+\end{tabular}
+\caption{Measured throughput, 350M, ctx 1,024, 2$\times$T4, random tokens. One run per row.}
+\label{tab:speed}
+\end{table}
+
+Chunked loss and ZeRO-1 alone gave no gain (3,058 tokens/s); they are there to save memory, not time.
+Expanding K/V costs extra memory traffic, but this was far cheaper than the math kernel.
+At 7,336 tokens/s, 1.5B tokens take about 57 hours (1.5$\times10^9$ / 7,336 / 3,600), if the rate is the total over both GPUs.
+Our measurement is on T4 with one PyTorch version; we do not claim it holds on other GPUs, where the kernel selection rules may differ.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+\def\s{0.0004}
+\foreach \y/\v/\l/\c in {0/3120/{HF sdpa (enable\_gqa)}/red!35, 0.8/7336/{K/V expanded, mbs 4}/green!35, 1.6/5947/{expanded + ckpt, mbs 8}/blue!25}{
+  \fill[\c] (0,\y) rectangle ({\v*\s*3.2},\y+0.55);
+  \node[anchor=west] at (0.1,\y+0.27) {\l};
+  \node[anchor=west] at ({\v*\s*3.2+0.1},\y+0.27) {\v};
+}
+\draw (0,-0.2)--(0,2.3);
+\node[anchor=north] at (2,-0.3) {tokens/s (350M, 2$\times$T4)};
+\end{tikzpicture}
+\caption{Throughput by attention setup (Table~\ref{tab:speed}).}
+\label{fig:speed}
+\end{figure}
+
+%% ------------------------------------------------------------------
+\section{Analysis and Discussion}
+\label{sec:analysis}
+Analysis that depends on pending results waits for them: (i) whether lower cut-letter rate gives lower bits per byte in the ablation; (ii) where the 350M model sits against chance on the labeled tasks.
+We will write each only after its table is filled.
+The claim is meant to hold whatever the full benchmark shows about frontier tokenizers: comparable or better fertility at a 32k--48k vocabulary (5--8 times smaller than a 262k vocabulary), no broken letters, and an open pipeline.
+If a public tokenizer beats ours on tokens per word, the cut-letter rate and the vocabulary size remain the differences to report.
+
+\section{Conclusion}
+We map Tamil letters to single code points so that a standard Unigram tokenizer cannot cut them.
+On 2,000 held-out documents it uses fewer Tamil tokens than every multilingual tokenizer we measured, at a fraction of their vocabulary, with no broken letters; the model-level evaluation is specified, and we report one measured training-speed result for T4 GPUs.
+
+\section*{Limitations}
+\begin{itemize}
+\item \textbf{Results are mostly pending.} The fertility benchmark (Table~\ref{tab:fertility}) is measured; the ablation and model scores are not run.
+\item \textbf{Leading space is lost on decode.} The decoder strips one leading space, so text that starts with a space does not round-trip. Our round-trip metric compares to NFC text without that case.
+\item \textbf{Offsets are coarse.} Because the normalizer replaces several code points with one, character offsets point to an akshara's last code point. We compute cut letters from token text instead.
+\item \textbf{Synthetic Tanglish is not chat Tanglish.} It is rule-based romanization with noise. Real romanized text is only the Dakshina set.
+\item \textbf{One language.} The mapping is Tamil-specific. Other abugidas would need their own tables.
+\item \textbf{Small model, small budget.} 350M parameters, about 1.5B tokens, one run, one seed. Results will not transfer to large models.
+\item \textbf{Fertility is not quality.} Fewer tokens per word helps cost and context length, but is not shown to help understanding until the ablation runs.
+\item \textbf{Compute and platform.} The speed finding is for T4 and one software stack. Near-duplicates are not removed. Licences were taken from our source table and not re-checked.
+\end{itemize}
+
+\section*{Ethical Considerations}
+All text comes from public datasets used under their stated licences: Sangraha (CC BY 4.0), IndicCorp v2 (CC0), Tamil and English Wikipedia (CC BY-SA 3.0), FineWeb-Edu (ODC-By), Dakshina (CC BY-SA 4.0), Aya (Apache 2.0), IndicAlign (CC BY 4.0), IndicXNLI and IndicSentiment (CC0), IndicQA and Aksharantar (CC BY 4.0), Belebele (CC BY-SA 4.0).
+These strings are from our source table and must be checked against each dataset page before release.
+Share-alike terms of Wikipedia and Dakshina may apply to released derivatives, so we will state the terms in the model card.
+We collected no personal data and ran no human study. Web text may contain personal or offensive content that our filters do not remove.
+A model this small can write fluent but false Tamil, and a tokenizer reduces cost for one language only, which does not make a system fair to its speakers.
+AI assistants were used in drafting this paper and the code; all numbers come from logged runs.
+
+\bibliographystyle{acl_natbib}
+\bibliography{references}
+
+\end{document}

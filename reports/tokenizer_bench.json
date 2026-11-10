@@ -1,0 +1,250 @@
+{
+  "environment": {
+    "python": "3.14.4",
+    "tokenizers": "0.22.2",
+    "numpy": "2.4.2",
+    "psutil": "7.2.2",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 25 Model 124 Stepping 0, AuthenticAMD",
+    "cpu_logical": 12,
+    "cpu_physical": 6,
+    "ram_total_gb": 16.4,
+    "tokenizer_dir": "artifacts\\tok64k"
+  },
+  "benchmarks": {
+    "tok64k": {
+      "name": "tok64k",
+      "dir": "artifacts\\tok64k",
+      "sha256": "861ebf3409db01b3964686bbbf3a71f0b721cd88b571bcbdb3d67196397a25d8",
+      "load": {
+        "seconds": 0.1077,
+        "rss_before_mb": 106.4,
+        "rss_after_mb": 176.4,
+        "rss_delta_mb": 70.0,
+        "vocab": 63995
+      },
+      "throughput": {
+        "tamil_1mb": {
+          "bytes": 999900,
+          "chars": 374508,
+          "tokens": 69085,
+          "tokens_per_char": 0.1845,
+          "encode_mb_s": 0.98,
+          "encode_tok_s": 67723,
+          "encode_ms_best": 881.7,
+          "encode_ms_median": 1020.1,
+          "decode_mb_s": 1.891,
+          "decode_tok_s": 130683,
+          "decode_ms_median": 528.6,
+          "roundtrip_exact": true
+        },
+        "tamil_10mb": {
+          "bytes": 9999825,
+          "chars": 3745389,
+          "tokens": 690898,
+          "tokens_per_char": 0.1845,
+          "encode_mb_s": 0.647,
+          "encode_tok_s": 44716,
+          "encode_ms_best": 15451.0,
+          "encode_ms_median": 15451.0,
+          "decode_mb_s": 1.767,
+          "decode_tok_s": 122089,
+          "decode_ms_median": 5659.0,
+          "roundtrip_exact": true
+        },
+        "tanglish_1mb": {
+          "bytes": 999900,
+          "chars": 999900,
+          "tokens": 346501,
+          "tokens_per_char": 0.3465,
+          "encode_mb_s": 0.466,
+          "encode_tok_s": 161502,
+          "encode_ms_best": 2131.9,
+          "encode_ms_median": 2145.5,
+          "decode_mb_s": 1.443,
+          "decode_tok_s": 500186,
+          "decode_ms_median": 692.7,
+          "roundtrip_exact": true
+        },
+        "tanglish_10mb": {
+          "bytes": 9999909,
+          "chars": 9999909,
+          "tokens": 3465316,
+          "tokens_per_char": 0.3465,
+          "encode_mb_s": 0.454,
+          "encode_tok_s": 157210,
+          "encode_ms_best": 22042.7,
+          "encode_ms_median": 22042.7,
+          "decode_mb_s": 1.31,
+          "decode_tok_s": 453878,
+          "decode_ms_median": 7634.9,
+          "roundtrip_exact": true
+        },
+        "english_1mb": {
+          "bytes": 999960,
+          "chars": 999960,
+          "tokens": 207685,
+          "tokens_per_char": 0.2077,
+          "encode_mb_s": 0.466,
+          "encode_tok_s": 96881,
+          "encode_ms_best": 2107.0,
+          "encode_ms_median": 2143.7,
+          "decode_mb_s": 1.597,
+          "decode_tok_s": 331682,
+          "decode_ms_median": 626.2,
+          "roundtrip_exact": true
+        },
+        "english_10mb": {
+          "bytes": 9999990,
+          "chars": 9999990,
+          "tokens": 2076922,
+          "tokens_per_char": 0.2077,
+          "encode_mb_s": 0.464,
+          "encode_tok_s": 96341,
+          "encode_ms_best": 21558.1,
+          "encode_ms_median": 21558.1,
+          "decode_mb_s": 1.441,
+          "decode_tok_s": 299252,
+          "decode_ms_median": 6940.4,
+          "roundtrip_exact": true
+        },
+        "code_1mb": {
+          "bytes": 999960,
+          "chars": 903810,
+          "tokens": 394215,
+          "tokens_per_char": 0.4362,
+          "encode_mb_s": 0.134,
+          "encode_tok_s": 52710,
+          "encode_ms_best": 7128.1,
+          "encode_ms_median": 7479.0,
+          "decode_mb_s": 1.386,
+          "decode_tok_s": 546268,
+          "decode_ms_median": 721.7,
+          "roundtrip_exact": true
+        },
+        "code_10mb": {
+          "bytes": 9999912,
+          "chars": 9038382,
+          "tokens": 3942273,
+          "tokens_per_char": 0.4362,
+          "encode_mb_s": 0.127,
+          "encode_tok_s": 50196,
+          "encode_ms_best": 78538.3,
+          "encode_ms_median": 78538.3,
+          "decode_mb_s": 1.258,
+          "decode_tok_s": 496060,
+          "decode_ms_median": 7947.2,
+          "roundtrip_exact": true
+        },
+        "digits_1mb": {
+          "bytes": 999999,
+          "chars": 968253,
+          "tokens": 904761,
+          "tokens_per_char": 0.9344,
+          "encode_mb_s": 0.328,
+          "encode_tok_s": 296900,
+          "encode_ms_best": 2993.9,
+          "encode_ms_median": 3047.4,
+          "decode_mb_s": 1.057,
+          "decode_tok_s": 956694,
+          "decode_ms_median": 945.7,
+          "roundtrip_exact": true
+        },
+        "digits_10mb": {
+          "bytes": 9999990,
+          "chars": 9682530,
+          "tokens": 9047610,
+          "tokens_per_char": 0.9344,
+          "encode_mb_s": 0.276,
+          "encode_tok_s": 249799,
+          "encode_ms_best": 36219.6,
+          "encode_ms_median": 36219.6,
+          "decode_mb_s": 0.929,
+          "decode_tok_s": 840216,
+          "decode_ms_median": 10768.2,
+          "roundtrip_exact": true
+        },
+        "emoji_1mb": {
+          "bytes": 999922,
+          "chars": 290675,
+          "tokens": 465080,
+          "tokens_per_char": 1.6,
+          "encode_mb_s": 0.518,
+          "encode_tok_s": 240877,
+          "encode_ms_best": 1907.0,
+          "encode_ms_median": 1930.8,
+          "decode_mb_s": 1.293,
+          "decode_tok_s": 601294,
+          "decode_ms_median": 773.5,
+          "roundtrip_exact": true
+        },
+        "emoji_10mb": {
+          "bytes": 9999994,
+          "chars": 2906975,
+          "tokens": 4651160,
+          "tokens_per_char": 1.6,
+          "encode_mb_s": 0.516,
+          "encode_tok_s": 239796,
+          "encode_ms_best": 19396.3,
+          "encode_ms_median": 19396.3,
+          "decode_mb_s": 1.288,
+          "decode_tok_s": 599293,
+          "decode_ms_median": 7761.1,
+          "roundtrip_exact": true
+        }
+      },
+      "long_doc": {
+        "chars": 200000,
+        "bytes": 533984,
+        "tokens": 36893,
+        "encode_ms": 776.0,
+        "decode_ms": 293.9,
+        "roundtrip_exact": true
+      },
+      "batch": {
+        "docs": 512,
+        "bytes": 458240,
+        "tokens": 119424,
+        "seconds": 0.204,
+        "docs_per_s": 2506.5,
+        "mb_per_s": 2.24,
+        "tok_per_s": 584645
+      },
+      "streaming": {
+        "chunks": 100,
+        "chunk_mb": 1.0,
+        "total_mb": 100.0,
+        "seconds": 155.33,
+        "mb_per_s": 0.64,
+        "tokens": 6908500,
+        "baseline_rss_mb": 566.7,
+        "peak_rss_mb": 569.5,
+        "peak_delta_mb": 2.8
+      },
+      "id_memory": {
+        "tokens": 310898,
+        "list_mb_per_1m": 27.16,
+        "uint16_mb_per_1m": 2.0,
+        "int32_mb_per_1m": 4.0,
+        "list_bytes": 8443372,
+        "list_per_token_bytes": 27.2,
+        "uint16_per_token_bytes": 2,
+        "int32_per_token_bytes": 4,
+        "max_id": 13337
+      }
+    }
+  },
+  "order": [
+    "tok64k"
+  ],
+  "elapsed_s": 735.5,
+  "texts": {
+    "tamil": "தமிழ் மொழி உலகின் மிகப் பழமையான மொழிகளில் ஒன்றாகும். இலக்கியம் செழித்தது; சங்க காலம் தொட்டு இன்று வரை. ",
+    "tanglish": "vanakkam da, epdi iruke? naan nalla iruken, nee epdi? sapteengala? poi thoongu, naalai velai irukku. ",
+    "english": "The quick brown fox jumps over the lazy dog while the scientist writes a paper about tokenization efficiency and vocabulary size. ",
+    "code": "def add(a, b):\n    if a > 0:\n        return {\"x\": [a, b]}\n\treturn a + b  # comment with நன்றி\n",
+    "digits": "1234567890 3.14159 1,00,000 2026-11-06 0xDEADBEEF 42% ₹1,299 ",
+    "emoji": "😀🔥👍🏽👨‍👩‍👧‍👦🏳️‍🌈1️⃣🇮🇳🧑🏾‍💻 "
+  }
+}
