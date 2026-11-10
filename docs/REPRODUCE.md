@@ -118,7 +118,7 @@ The kernel:
 
 1. loads Aya Tamil and the four IndicAlign Tamil subsets, filters and deduplicates,
 2. adds the synthetic reliability set three times,
-3. runs 3 epochs at lr 3e-5, context 1,024, micro-batch 2, accumulation 16,
+3. runs 2 epochs at lr 3e-5, context 1,024, micro-batch 2, accumulation 16,
 4. generates the 15 holdout cases with greedy decoding,
 5. exports an HF-format model plus `reliability.json`, `sft_log.jsonl`, `sft_data_stats.json`.
 

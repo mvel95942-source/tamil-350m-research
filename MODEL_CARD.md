@@ -36,10 +36,10 @@ code point of an akshara, not the first.
 | Objective | next-token prediction, cross-entropy |
 | Corpus | 927,436,918 tokens, packed into a flat uint16 token file |
 | Steps per epoch | 3,536 at 262,144 tokens/step |
-| Epochs completed | **0.98** (step 3,464 of 3,536 in the last completed run) |
+| Epochs completed | **0.987** (step 3,490 of 3,536) |
 | Hardware | Kaggle free tier, 2 × NVIDIA T4 (16 GB each) |
-| Throughput | 6,426–6,486 tokens/s |
-| GPU time on pretraining | 9.1 + 11.4 + 11.8 = **32.3 h** across three sessions |
+| Throughput | 6,311–6,486 tokens/s |
+| GPU time on pretraining | 9.1 + 11.4 + 11.8 + 1.8 = **34.1 h** across four sessions |
 | Optimizer | AdamW, decoupled weight decay 0.0, betas (0.9, 0.95) |
 | Batch | micro-batch 2, gradient accumulation 64, 2 data-parallel ranks = 256 sequences/step |
 | Precision | fp16 autocast with loss scaling |
@@ -113,7 +113,7 @@ blocklisted from training. None of these numbers exist yet.
 1. **Undertrained for knowledge.** 0.93B tokens is about 13% of a compute-optimal budget for
    this parameter count. Expect confident errors on facts.
 2. **Not instruction-tuned in the recorded results.** The only SFT checkpoint measured was an
-   early preview; the cleaned SFT run is pending.
+   early preview; the cleaned SFT run is in progress.
 3. **Data naturalness is not human-audited.** The synthetic reliability set is mechanically
    correct but written by templates.
 4. **Tokenizer trade-off.** English is tokenized worse than multilingual competitors, by

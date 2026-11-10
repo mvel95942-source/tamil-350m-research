@@ -22,14 +22,14 @@ Status date: **2026-11-10**.
 |---|---|---|
 | Akshara-safe Tamil tokenizer (32k) | **done** | `reports/fertility_v2.md`, `reports/tokenizer_bench.md` |
 | Packed pretraining corpus | **done** — 927,436,918 tokens | `docs/TRAINING.md` |
-| Pretraining, epoch 1 | **3,464 / 3,536 steps** in the last completed run; a short continuation to 3,536 is in flight | `logs/v4_final.log`, `logs/v5_final.log` |
-| Supervised fine-tuning | **not run yet** — kernel written, never pushed | `kaggle_sft_clean/` |
+| Pretraining, epoch 1 | **3,490 / 3,536 steps (98.7%)**; the last 46 steps were deliberately skipped to protect the SFT quota | `logs/v4_final.log`, `logs/v5_final.log`, `logs/v7_final.log` |
+| Supervised fine-tuning | **running now** — pushed 2026-11-10 14:46 | `kaggle_sft_clean/` |
 | Reliability holdout (15 cases) | **0 / 15** on an early SFT preview checkpoint | `docs/EVALUATION.md` |
 | Local chat UI | built; tested with the optional facts layer | `scripts/chat_tamil_web.py` |
 | Optional dated facts layer | built and tested | `scripts/facts_ta.py` |
 
 The honest one-line summary: **the tokenizer and the training pipeline work; the model does
-not chat reliably yet, and the final SFT run has not happened.**
+not chat reliably yet, and the cleaned SFT run is in progress now.**
 
 ![model architecture](docs/paper/figures/fig3_architecture.svg)
 
@@ -65,9 +65,9 @@ not chat reliably yet, and the final SFT run has not happened.**
    reputable, licence-clear releases (Sangraha, IndicCorpV2, Tamil Wikipedia, FineWeb-Edu,
    Dakshina). Held-out documents are blocklisted from training.
 
-3. **A working from-scratch training pipeline** at 6,426–6,486 tokens/s on 2×T4 for a 380.2M
+3. **A working from-scratch training pipeline** at 6,311–6,486 tokens/s on 2×T4 for a 380.2M
    parameter model, with a resumable checkpoint chain that survived restarts, quota limits
-   and a DNS outage.
+   and two DNS outages.
 
 4. **A discipline of refusing convenient data.** No benchmark or test split was ever trained
    on. The Microsoft Updesh pilot was rejected after inspection showed semantic role
@@ -87,8 +87,9 @@ not chat reliably yet, and the final SFT run has not happened.**
 - **World knowledge is thin.** The model saw 0.93B tokens. A compute-optimal run for this
   size would be roughly 7B tokens, so it has about 13% of the training usually needed.
   Fine-tuning cannot add facts that pretraining never saw.
-- **Epoch 1 is not finished inside one weekly quota.** It reached step 3,464 of 3,536 in
-  23.2 GPU-hours; the remaining 72 steps needed a short extra run.
+- **Epoch 1 stopped 46 steps short.** It reached step 3,490 of 3,536 in 25.0 GPU-hours. The
+  last 46 steps were deliberately not run: they would have eaten the margin needed for SFT.
+  The loss at that point was 3.29, and the curve had flattened.
 - **No weights are published yet.** Checkpoints live in private Kaggle kernel outputs and
   are multi-gigabyte. This repository ships code, data rules, and evidence, not tensors.
 - **No fluent Tamil speaker has audited the SFT data or the outputs.** Arithmetic templates
@@ -131,7 +132,7 @@ docs/history/           the internal handoff note kept for provenance
 
 See `docs/REPRODUCE.md`. The short version: create the two Kaggle datasets, push
 `kaggle/tamil-pretrain-resume.py` on 2×T4, then push `kaggle_sft_clean/`. Expect roughly
-11.5 GPU-hours per pretraining session and 4.5 hours for SFT, against a free quota of about
+11.5 GPU-hours per pretraining session and 3.5 hours for SFT, against a free quota of about
 30 GPU-hours per week.
 
 ---

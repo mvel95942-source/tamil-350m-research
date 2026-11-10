@@ -24,17 +24,20 @@ has the symptom, the cause, the fix, and where the proof lives.
   yet at full weight, and a base model with only 0.93B pretraining tokens.
 - **Fix:** built a cleaned SFT mixture and a mechanically verified reliability set, repeated
   three times; kept the holdout frozen.
-- **Result:** pending. The cleaned SFT run had not executed at snapshot time.
+- **Result:** in progress at snapshot time.
 - **Evidence:** `docs/EVALUATION.md`, `reports/tamil_reliability_preview_aligned.json`.
 
-## F3. Epoch 1 stopped 72 steps short
+## F3. Epoch 1 stopped 46 steps short
 
-- **Symptom:** v5 exited cleanly at about step 3,464 of 3,536.
-- **Cause:** 11.8 h of wall time is what the weekly quota allows after v4; the remaining 72
-  steps needed roughly 50 more minutes.
-- **Fix:** a dedicated short continuation run (v6, retried as v7) capped at 1.6 h.
-- **Result:** in flight at snapshot time.
-- **Evidence:** `logs/v5_final.log`, `docs/TRAINING.md`.
+- **Symptom:** v5 exited cleanly at step 3,361 of 3,536. The earlier estimate of "about 3,464"
+  was derived from throughput and was wrong by ~100 steps.
+- **Cause:** 11.8 h of wall time is what the weekly quota allows after v4. A continuation run
+  (v6, retried as v7) added 129 more steps, reaching 3,490.
+- **Fix:** stopped there deliberately. The remaining 46 steps (~30 min) would have consumed the
+  quota margin needed to let SFT finish and export its model.
+- **Result:** epoch 1 is 98.7% complete. The loss curve had flattened at 3.29.
+- **Evidence:** `logs/v5_final.log`, `logs/v7_final.log`, `logs/v7_run_log.jsonl`,
+  `docs/TRAINING.md`.
 
 ## F4. A DNS outage broke the unattended chain
 

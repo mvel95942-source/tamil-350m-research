@@ -67,7 +67,7 @@ weight against the much larger natural set.
 - Quality gate: assistant answer 8–2,000 characters, at least 3 words, no URLs.
 - Deduplication on the first user turn.
 - Exact per-source counts are written by the kernel to `sft_data_stats.json`; the cleaned SFT
-  run had not executed when this snapshot was taken, so those counts are not claimed here.
+  run was in progress when this snapshot was taken, so those counts are not claimed here.
 
 ---
 
