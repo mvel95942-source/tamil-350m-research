@@ -1,5 +1,8 @@
 # Tamil 350M — a from-scratch Tamil language model
 
+> **Research project, not a product.** The model does not answer reliably yet. Every claim
+> below is tied to a logged run or a checked file, including the failures.
+
 This repository is the research log of an attempt to train a **350M-parameter Tamil-first
 chat model from scratch**, on free Kaggle T4 GPUs, without starting from a pretrained
 multilingual model. It contains the code, the data rules, the exact training runs, the raw
@@ -27,6 +30,8 @@ Status date: **2026-11-10**.
 
 The honest one-line summary: **the tokenizer and the training pipeline work; the model does
 not chat reliably yet, and the final SFT run has not happened.**
+
+![model architecture](docs/paper/figures/fig3_architecture.svg)
 
 ---
 
